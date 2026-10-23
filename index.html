@@ -12,6 +12,7 @@
 </head>
 <body>
 
+    <div class="nav-overlay"></div>
     <nav class="navbar">
         <div class="nav-container">
             <a href="#home" class="logo">Sahil<span>.</span></a>
@@ -21,7 +22,7 @@
                 <li><a href="#experience">Experience</a></li>
                 <li><a href="#skills">Skills</a></li>
                 <li><a href="#projects">Projects</a></li>
-                <li><a href="Resume..pdf" target="_blank">Resume</a></li>
+                <li><a href="resume.pdf" target="_blank">Resume</a></li>
                 <li><a href="#contact">Contact</a></li>
             </ul>
             <div class="hamburger">
@@ -40,7 +41,7 @@
                 Based in Ahmedabad, Gujarat.
             </p>
             <div class="hero-buttons">
-                <a href="Resume..pdf" target="_blank" class="btn btn-primary"><i class="fas fa-file-pdf"></i> View Resume</a>
+                <a href="resume.pdf" target="_blank" class="btn btn-primary"><i class="fas fa-file-pdf"></i> View Resume</a>
                 <a href="#projects" class="btn btn-secondary">My Work</a>
             </div>
             <div class="social-links">
@@ -138,10 +139,6 @@
                 <div class="skill-card glass-card">
                     <i class="fa-brands fa-js skill-icon js-color"></i>
                     <h3>JavaScript</h3>
-                </div>
-                <div class="skill-card glass-card">
-                    <i class="fa-solid fa-code skill-icon jquery-color"></i>
-                    <h3>jQuery</h3>
                 </div>
                 <div class="skill-card glass-card">
                     <i class="fa-brands fa-php skill-icon php-color"></i>
@@ -294,21 +291,69 @@
     </footer>
 
     <script>
-        // Mobile Menu Toggle
+        // Mobile Menu Toggle & Click Outside Handler
         const hamburger = document.querySelector('.hamburger');
         const navLinks = document.querySelector('.nav-links');
+        const navOverlay = document.querySelector('.nav-overlay');
+        const hamburgerIcon = hamburger ? hamburger.querySelector('i') : null;
 
-        hamburger.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
-            hamburger.classList.toggle('active');
+        function openMenu() {
+            navLinks.classList.add('active');
+            hamburger.classList.add('active');
+            if (navOverlay) navOverlay.classList.add('active');
+            if (hamburgerIcon) {
+                hamburgerIcon.classList.remove('fa-bars');
+                hamburgerIcon.classList.add('fa-xmark');
+            }
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMenu() {
+            navLinks.classList.remove('active');
+            hamburger.classList.remove('active');
+            if (navOverlay) navOverlay.classList.remove('active');
+            if (hamburgerIcon) {
+                hamburgerIcon.classList.remove('fa-xmark');
+                hamburgerIcon.classList.add('fa-bars');
+            }
+            document.body.style.overflow = '';
+        }
+
+        hamburger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (navLinks.classList.contains('active')) {
+                closeMenu();
+            } else {
+                openMenu();
+            }
+        });
+
+        // Close on side / overlay click
+        if (navOverlay) {
+            navOverlay.addEventListener('click', closeMenu);
+        }
+
+        // Close when clicking outside of navLinks and hamburger
+        document.addEventListener('click', (e) => {
+            if (navLinks.classList.contains('active')) {
+                if (!navLinks.contains(e.target) && !hamburger.contains(e.target)) {
+                    closeMenu();
+                }
+            }
         });
 
         // Close mobile menu when clicking a link
         document.querySelectorAll('.nav-links a').forEach(link => {
             link.addEventListener('click', () => {
-                navLinks.classList.remove('active');
-                hamburger.classList.remove('active');
+                closeMenu();
             });
+        });
+
+        // Close menu on resize to desktop
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768 && navLinks.classList.contains('active')) {
+                closeMenu();
+            }
         });
 
         // Sticky Navbar on Scroll
